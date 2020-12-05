@@ -1,0 +1,28 @@
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _View = _interopRequireDefault(require("./View.js"));
+
+var _icons = _interopRequireDefault(require("url:../../img/icons.svg"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+class paginationView extends _View.default {
+  _generateMarkup() {
+    const numPages = Math.ceil(this._data.results.length / this._data.resultsPerPage); //page1, no other pages
+
+    if (this._data.results.page === 1 && numPages === 1) {} //page1, there are other pages
+    else if (this._data.results.page === 1 && numPages !== 1) {} //other page, no other pages
+      else if (this._data.results.page !== 1 && numPages !== 1) {} //other page, there are other pages
+        else {}
+  }
+
+}
+
+var _default = new paginationView();
+
+exports.default = _default;

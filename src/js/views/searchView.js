@@ -3,6 +3,7 @@ class SearchView {
 
   getQuery() {
     const query =  this.#parentElement.querySelector('.search__field').value;
+    console.log(query);
     this.#clearInput();
     return query;
   }

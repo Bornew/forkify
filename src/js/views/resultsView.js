@@ -28,6 +28,7 @@ class ResultsView extends View {
       </li>
     `)).join();
   }
+
 }
 
 export default new ResultsView();
