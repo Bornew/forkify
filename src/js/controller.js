@@ -2,7 +2,7 @@ import 'core-js/stable';
 import * as model from './model.js';
 import recipeView from './views/recipeView.js';
 import searchView from './views/searchView.js';
-
+import resultsView from './views/resultsView.js';
 // https://forkify-api.herokuapp.com/v2
 const controlRecipes = async function() {
   try {
@@ -23,8 +23,10 @@ const controlSearchResults = async function() {
   try {
     const query = searchView.getQuery();
     if(!query) return;
+    resultsView.renderSpinner();
     await model.loadSearchResults(query);
     console.log(model.state.search.results);
+    resultsView.render(model.state.search.results);
   }catch(err) {
     console.log(err);
   }
