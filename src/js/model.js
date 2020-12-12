@@ -5,7 +5,8 @@ import { RES_PER_PAGE } from './config';
 
 export const state = {
   recipe: {},
-  search: { query: '', results: [], page: 1, resultsPerPage: RES_PER_PAGE }
+  search: { query: '', results: [], page: 1, resultsPerPage: RES_PER_PAGE },
+  bookmarks: []
 };
 
 export const loadRecipe = async function(id) {
@@ -21,9 +22,12 @@ export const loadRecipe = async function(id) {
       servings: recipe.servings,
       sourceUrl: recipe.source_url,
       cookingTime: recipe.cooking_time,
-      ingredients: recipe.ingredients
+      ingredients: recipe.ingredients,
+      ...(recipe.key && { key: recipe.key }),
     };
-    console.log(state.recipe);
+    if (state.bookmarks.some(bookmark => bookmark.id === id))
+      state.recipe.bookmarked = true;
+    else state.recipe.bookmarked = false;
   } catch (err) {
     console.log(err);
     throw err;
@@ -43,7 +47,7 @@ export const loadSearchResults = async function(query) {
         image: recipe.image_url
       };
     });
-    state.search.results.page = 1;
+    state.search.page = 1;
   } catch (err) {
     console.log(err);
     throw err;
@@ -52,7 +56,7 @@ export const loadSearchResults = async function(query) {
 
 export const getSearchResultsPage = function(page = state.search.page) {
   state.search.page = page; //1
-  console.log(typeof page);
+  console.log(page); //新传入的页数
   const start = (page - 1) * state.search.resultsPerPage; //0
   const end = page * state.search.resultsPerPage; //10
 
@@ -64,4 +68,21 @@ export const updateServings = function(newServings) {
     ing.quantity = (ing.quantity * newServings) / state.recipe.servings; //比例一致
   });
   state.recipe.servings = newServings;
+};
+
+export const addBookmark = function(recipe) {
+  state.bookmarks.push(recipe);
+  if (recipe.id === state.recipe.id) {
+    state.recipe.bookmarked = true;
+    console.log('it is bookmarked');
+  }
+};
+
+export const deleteBookmark = function(id) {
+  // Delete bookmark
+  const index = state.bookmarks.findIndex(el => el.id === id);
+  state.bookmarks.splice(index, 1);
+
+  // Mark current recipe as NOT bookmarked
+  if (id === state.recipe.id) state.recipe.bookmarked = false;
 };
