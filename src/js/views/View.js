@@ -3,19 +3,17 @@ import icons from 'url:../../img/icons.svg';
 
 export default class View {
   _data;
-  _errorMessage = 'No recipes found for your query. Please try again!';
-  _message = '';
-  render(data) {
+
+  render(data, render = true) {
     if (!data || (Array.isArray(data) && data.length === 0))
       return this.renderError();
     this._data = data;
-    this._clear();
     const markup = this._generateMarkup();
+    if (!render) return markup;
+    this._clear();
     this._parentElement.insertAdjacentHTML('afterbegin', markup);
   }
   updateView(data) {
-    if (!data || (Array.isArray(data) && data.length === 0))
-      return this.renderError();
     this._data = data;
     const newMarkup = this._generateMarkup();
     // Compare the newMarkup with the old one
@@ -50,6 +48,7 @@ export default class View {
         </svg>
       </div> 
    `;
+    this._clear();
     this._parentElement.insertAdjacentHTML('afterbegin', markup);
   }
   renderError(err = this._errorMessage) {
@@ -63,6 +62,7 @@ export default class View {
           <p>${err}</p>
         </div> 
      `;
+    this._clear();
     this._parentElement.insertAdjacentHTML('afterbegin', markup);
   }
 
@@ -77,6 +77,7 @@ export default class View {
           <p>${message}</p>
         </div> 
      `;
+    this._clear();
     this._parentElement.insertAdjacentHTML('afterbegin', markup);
   }
 }
