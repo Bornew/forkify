@@ -8,6 +8,7 @@ import paginationView from './views/paginationView.js';
 import bookmarksView from './views/bookmarksView.js';
 import addRecipeView from './views/addRecipeView.js';
 import { MODAL_CLOSE_SEC } from './config';
+import sortSearchResultsView from './views/sortSearchResultsView';
 
 // https://forkify-api.herokuapp.com/v2
 const controlRecipes = async function() {
@@ -36,6 +37,7 @@ const controlSearchResults = async function() {
     resultsView.render(model.getSearchResultsPage(model.state.search.page));
     console.log(model.getSearchResultsPage());
     paginationView.render(model.state.search);
+    sortSearchResultsView.render(model.state.search);
   } catch (err) {
     console.log(err);
   }
@@ -102,12 +104,19 @@ const controlAddRecipe = async function(newRecipe) {
     addRecipeView.renderError(err.message);
   }
 };
+
+const controlSortSearchResults = function() {
+  model.sortSearchResults();
+  resultsView.render(model.getSearchResultsPage(model.state.search.page));
+  //sortSearchResultsView.render(model.state.search);
+};
 const init = function() {
   bookmarksView.addHandlerRender(controlBookmarks);
   recipeView.addHandlerRender(controlRecipes);
   recipeView.addHandlerUpdateServings(controlServings);
   recipeView.addHandlerAddBookmark(controlAddBookmark);
   searchView.addHandlerSearch(controlSearchResults);
+  sortSearchResultsView.addHandlerSort(controlSortSearchResults);
   paginationView.addHandlerClick(controlPagination);
   addRecipeView.addHandlerUpload(controlAddRecipe);
 };

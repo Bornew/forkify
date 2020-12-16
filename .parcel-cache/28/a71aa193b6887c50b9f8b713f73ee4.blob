@@ -450,6 +450,19 @@ body {
   margin-bottom: 2rem;
 }
 
+.sort {
+  margin-top: auto;
+  padding: 0 3.5rem;
+}
+.sort::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+.sort__btn {
+  float: right;
+}
+
 .pagination {
   margin-top: auto;
   padding: 0 3.5rem;

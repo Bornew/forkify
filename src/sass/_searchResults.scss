@@ -2,12 +2,29 @@
   padding: 3rem 0;
   display: flex;
   flex-direction: column;
+
 }
 
 .results {
   list-style: none;
   margin-bottom: 2rem;
+
 }
+.sort {
+  margin-top: auto;
+  padding: 0 3.5rem;
+
+  &::after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+
+  &__btn {
+    float: right;
+  }
+}
+
 
 .pagination {
   margin-top: auto;

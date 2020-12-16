@@ -5,7 +5,13 @@ import { AJAX } from './views/helpers';
 
 export const state = {
   recipe: {},
-  search: { query: '', results: [], page: 1, resultsPerPage: RES_PER_PAGE },
+  search: {
+    query: '',
+    results: [],
+    page: 1,
+    resultsPerPage: RES_PER_PAGE,
+    sort: false
+  },
   bookmarks: []
 };
 
@@ -38,11 +44,43 @@ export const loadRecipe = async function(id) {
   }
 };
 
+export const getRecipeCookingTime = async function(id) {
+  try {
+    const data = await AJAX(`${API_URL}/${id}?key=${API_KEY}`);
+    const { recipe } = data.data;
+    console.log('recipe.cookingTime', recipe.cooking_time);
+    return [id, recipe.cooking_time];
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+/**
+ *
+ * @param {Object[]} results the recipe array that you search for
+ * @returns {Promise<{cookingTime: undefined}[]>}
+ */
+export const addRecipeCookingTime = async function(results) {
+  const idArr = results.map(recipe => recipe.id);
+
+  const dataArr = await Promise.all(idArr.map(id => getRecipeCookingTime(id)));
+  console.log('dataArr', dataArr);
+  return state.search.results.map(recipe => {
+    const data = dataArr.find(data => data[0] === recipe.id);
+    console.log('data', data);
+    const cookingTime = data ? data[1] : undefined;
+    return {
+      ...recipe,
+      cookingTime: cookingTime
+    };
+  });
+};
+
 export const loadSearchResults = async function(query) {
   try {
     state.search.query = query;
     const data = await AJAX(`${API_URL}?search=${query}&key=${API_KEY}`);
-    console.log(query);
+    console.log('search results', query, data.data.recipes);
     state.search.results = data.data.recipes.map(recipe => {
       return {
         id: recipe.id,
@@ -50,7 +88,7 @@ export const loadSearchResults = async function(query) {
         publisher: recipe.publisher,
         image: recipe.image_url,
         // ...(recipe.key? {key: recipe.key}: ''),
-        ...(recipe.key && {key: recipe.key}),
+        ...(recipe.key && { key: recipe.key })
       };
     });
     state.search.page = 1;
@@ -58,6 +96,19 @@ export const loadSearchResults = async function(query) {
     console.log(err);
     throw err;
   }
+};
+
+export const sortSearchResults = async function() {
+  state.search.sort = !state.search.sort;
+  if (state.search.sort) {
+    state.search.results = await addRecipeCookingTime(state.search.results);
+    console.log('cookingTime is added', state.search.results);
+  }
+  state.search.results.sort((recipe1, recipe2) => {
+    console.log(recipe1.cookingTime, recipe2.cookingTime);
+    return recipe1.cookingTime - recipe2.cookingTime;
+  });
+  console.log('sorted!', state.search.results);
 };
 
 export const getSearchResultsPage = function(page = state.search.page) {
